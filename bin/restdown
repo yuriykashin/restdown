@@ -87,6 +87,7 @@ class Restdowner(Markdown):
     # - exclude other header levels from the TOC.
     _h1_stack = []
     def header_id_from_text(self, text, prefix, n):
+        text = transliterate_cyr(text)
         if n == 1:
             self._h1_stack.append(text)
         if self.api_sections is None:
@@ -675,6 +676,31 @@ class OrderedDict(dict):
         return ItemsView(self)
 ## end of http://code.activestate.com/recipes/576693/ }}}
 
+## cyrillic transliteration
+# http://stackoverflow.com/questions/14173421/use-string-translate-in-python-to-transliterate-cyrillic
+def transliterate_cyr(text):
+
+    symbols = (u"абвгдеёзийклмнопрстуфхъыьэАБВГДЕЁЗИЙКЛМНОПРСТУФХЪЫЬЭ",
+               u"abvgdeezijklmnoprstufh'y'eABVGDEEZIJKLMNOPRSTUFH'Y'E")
+    sequence = {
+        u'ж':'zh',
+        u'ц':'ts',
+        u'ч':'ch',
+        u'ш':'sh',
+        u'щ':'sch',
+        u'ю':'ju',
+        u'я':'ja',
+        u'Ж':'Zh',
+        u'Ц':'Ts',
+        u'Ч':'Ch'
+    }
+
+    for char in sequence.keys():
+        text = text.replace(char, sequence[char])
+
+    tr = {ord(a):ord(b) for a, b in zip(*symbols)}
+
+    return text.translate(tr)
 
 
 #---- mainline
